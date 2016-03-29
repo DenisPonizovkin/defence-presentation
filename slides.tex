@@ -1,0 +1,1608 @@
+%\documentclass[10pt,pdf,hyperref={unicode},fleqn]{beamer}
+\documentclass[10pt,xcolor={usenames,dvipsnames}]{beamer}
+
+\usepackage[T2A]{fontenc}       %поддержка кириллицы
+\usepackage[utf8]{inputenc}
+\usepackage{longtable} 
+\usepackage{cancel}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{graphicx}
+
+\usetheme{Darmstadt}
+\setbeamercolor{block title}{bg=white!30,fg=black}
+\newenvironment{variableblock}[3]{%
+  \setbeamercolor{block body}{#2}
+  \setbeamercolor{block title}{#3}
+  \begin{block}{#1}}{\end{block}}
+
+%% \usefonttheme{structurebold}
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{footline}{\hspace*{.5cm}\scriptsize{
+\hspace*{50pt} \hfill\insertframenumber/\inserttotalframenumber\hspace*{.5cm}}} 
+%\setbeamercovered{transparent}
+%\setbeamercolor{color1}{bg=blue!90!black,fg=white}
+\setbeamercolor{normal text}{bg=white,fg=black}
+\setbeamercolor{frametitle}{fg=black,bg=gray}
+%\insertframenumber
+%% \setbeamercolor{footline}{fg=blue}
+%% \setbeamerfont{footline}{series=\bfseries}
+%\setbeamerfont{page number in head/foot}{size=\small}
+%\hfill\insertframenumber/\inserttotalframenumber
+%\setbeamerfont{page number in head/foot}{size=\large}
+\theoremstyle{break}
+\newtheorem{assert}{Утверждение}[section]
+\newtheorem{assertORS}{Утверждение ОРС}
+\newtheorem{assertSRS}{Утверждение СРС}
+\newtheorem{myproof}{Доказательство}[section]
+
+%% \defbeamertemplate*{footline}{shadow theme}
+%% {%
+%%   \leavevmode%
+%%   \hbox{\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm plus1fil,rightskip=.3cm]{author in head/foot}%
+%%     \usebeamerfont{author in head/foot}\insertframenumber\,/\,\inserttotalframenumber\hfill\insertshortauthor
+%%   \end{beamercolorbox}%
+%%   \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+%%     \usebeamerfont{title in head/foot}\insertshorttitle%
+%%   \end{beamercolorbox}}%
+%%   \vskip0pt%
+%% }
+\def\top{\text{top-N}}
+\def\p{\text{p}}
+
+\begin{document}
+
+%1
+\title{ИПС им. А. К. Айламазяна РАН \\ Исследовательский Центр системного Анализа}
+\author{Понизовкин Д. М.  \\ Научный руководитель: к. т. н. Амелькин С. А. } 
+\institute{{\Large РАЗРАБОТКА МАТЕМАТИЧЕСКОЙ МОДЕЛИ И АЛГОРИТМОВ ИНФОРМАЦИОННЫХ ПРОЦЕССАХ В РЕКОМЕНДАТЕЛЬНЫХ СИСТЕМАХ.}}
+
+% \institute{XVIII ежегодная молодежная научно-практическая конференция «Наукоемкие информационные технологии»}
+% \date[conf-name]{conference long name 2013}
+% \date{27.11.2015} 
+
+\frame{\titlepage} 
+
+%2: Примеры.
+\begin{frame}
+    \frametitle{Рекомендательные системы (далее РС) в общем.}
+    \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{block}{}
+      \includegraphics[width=2in,height=2in]{pics/rs.pdf}
+    \end{block}
+
+    \column{.5\textwidth} % Left column and width
+    \begin{block}{Примеры известных РС}
+    \begin{center}
+      \begin{itemize}
+      \item Новостные: 
+        \begin{itemize}
+        \item Google News
+        \item Yahoo! News 
+        \end{itemize}
+      \item Музыкальные:
+
+        \begin{itemize}
+        \item LastFm
+        \item Spotify
+        \end{itemize}
+        
+      \item Товарные:
+        \begin{itemize}
+        \item Amazon
+        \item Ebay
+        \end{itemize}
+
+      \item Кинематографические:
+        \begin{itemize}
+        \item Netflix
+        \item MovieLens
+        \end{itemize}
+      \end{itemize}
+    \end{center}
+    \end{block}
+  \end{columns}
+\end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Кинематографический сервис. Прогноз оценки. Movie Lens.}
+%%   \begin{center}
+%%     \includegraphics[width=3in,height=1in]{pics/movielens.jpg}
+%%   \end{center}
+%% \end{frame}
+
+\begin{frame}
+  \frametitle{Задачи РС.}
+    \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{$\top$}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      Определить $N$ объектов с высокой степенью предпочтения пользователя.
+    \end{variableblock}
+
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{Прогнозирование.}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      Определить степень предпочтения пользователя конкретного объекта.
+    \end{variableblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Классификация РС.}
+  \begin{itemize}
+  \item Коллаборативные: 
+    \begin{enumerate}
+    \item Объектно-ориентированные, далее ОРС;
+    \item Субъектно-ориентированные, далее СРС;
+    \end{enumerate}
+  \item Кластерные;
+  \item Статистические: латентный анализ, факторный анализ, цепи Маркова, наивный Байесовский классификатор и т.д;
+  \item Машинное обучение;
+  \item Контентные;
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Основные задачи исследования}
+\begin{itemize}
+\item Ввести математическую модель РС:
+  \begin{itemize}
+    \item Задать модель представления данных;
+    \item Задать основные отношения между элементами системы;
+  \end{itemize}
+\item Ввести объективный способ оценки эффективности, сооветствующий задачам РС;
+%\item Ввести модель РС, в которой основа --- формальная дисциплина, а не эвристика.
+%\item Ввести модель РС, в которой возможно оперировать с информацией, обладающей свойством неопределенности, характерной для гуманистических информационных систем.
+%\item Ввести модель РС, в которой формализовать КРС и повысить их эффективность.
+\item Ввести решения задач, которые:
+  \begin{enumerate}
+  \item дают эффективное решение по введенной оценке эффективности.
+  \item описываются алгоритмами, обладающими свойством масштабируемости.
+  \item не зависят от дополнительных ограничений, чем гарантируется устойчивость эффективного решения.
+  \item предоставляют как минимум сравнимый результат, получаемый при решении задач в других моделях.
+  \end{enumerate}
+%\item Определить функцию оценки сходства между пользователем и объектом такую;
+%\item Ввести оценку эффективности, удовлетворяющую целевым задачам РС и коррелирующую с существующими оценками эффективности.
+\item Разработать ПО для проведения тестирования.
+\item Провести тесты на реальных данных, сравнить результаты, полученные при решении задач во введенной модели и
+в одной из существующей и используемой медели.
+\end{itemize}
+\end{frame}
+
+
+%2 http://www.slideshare.net/huguk/collaborative-filtering-at-scale-2-7671787
+% http://www.slideshare.net/abellogin/improving-memorybased-collaborative-filtering-by-neighbour-selection-based-on-user-preference-overlap
+
+% 10
+\begin{frame}
+\frametitle{Определения и обозначения.}
+\small {
+\begin{block}{}
+  \begin{itemize}
+    \item $U$ --- множество {\it пользователей}, $I$ --- множество {\it объектов}.
+    \item $[0,1]$ --- относительная шкала оценки сходства пользователя и объекта.
+    \item $\delta_0(u, i)$ --- функция оценки сходства, поставленное пользователем $u$ объекту $i$.
+    \item $\delta_0(u, i) = \varnothing$ --- значение неизвестно.
+    \item $\delta_1(u, i)$ --- функция оценки сходства, вычисленное системой.
+  \end{itemize}
+
+  \begin{center}
+    $\delta: U \times I \rightarrow [0,1], \delta \in \{\delta_0, \delta_1\}$ 
+  \end{center}
+
+  \begin{center}
+    $\delta_1: U \times U \rightarrow [0,1]$ 
+  \end{center}
+
+  \begin{center}
+    $\delta_1: I \times I \rightarrow [0,1]$ 
+  \end{center}
+\end{block}
+}
+\end{frame}
+
+%11
+%\underset{ \{ v^k \} } {\mathrm{max}}
+\begin{frame}
+%  \scriptsize {
+    \frametitle{Терминология и обозначения}
+    \begin{enumerate}
+    \item {\bf Контент} пользователя $u \in U$ или объекта $i \in I$ --- информация о характеристиках пользователя $u$ или объекта $i$.
+    \item {\bf Отношение сходства} --- $e^1 \mathit{R} e^2 \Leftrightarrow \delta_0(e^1, e^2) > \Delta$ или $\delta_1(e^1, e^2) > \Delta$. $e^1, e^2$ --- {\bf соседи}.
+    \item {\bf Оценка эффективности} $\mathcal{E} : T^a_{1} \times T^a_{\times} \rightarrow [0,1]$.
+      \begin{itemize}
+      \item $T^a, T^a_0, T^a_{\times}, T^a_1$ --- входное, обучающее, тестовое и результирующее множества.
+      \item $T^a_{0} \bigcup T^a_{\times} = T^a$, $T^a_{0} \bigcap T^a_{\times} = \varnothing$.
+      \item $T^a = I \times \{ [0,1] \bigcup \varnothing \}$: \\
+        $\{ (i, \delta_0(a, i)) \}$, $\delta_0(a, i) = \varnothing \Rightarrow$ $\bcancel{ \exists }$  $\delta_0(a, i)$.
+      \item $a$ --- активный пользователь, для которого решается задача.
+      \end{itemize}
+    \end{enumerate}
+
+\begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+\begin{center}
+Чем меньше значение $\mathcal{E}$, тем решение эффективней.
+\end{center}
+\end{variableblock}
+
+%  } 
+\end{frame}
+
+%12
+\begin{frame}
+  \frametitle{Целевые задачи РС}
+    \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{$\top$}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      $T^a_{1} = \{ (i_{1},\delta_1(a,i_{1}))\}$, где $a \mathit{R} i_{1}$ $\wedge$ $|T^a_{1}| = N$
+    \end{variableblock}
+
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{Прогнозирование.}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      $T^a_1 = \{ (i_{\times},\delta_{1}(a,i_{\times}))\}$, где $|\delta_{1}(a,i_{\times}) - \delta_0(a,i_{\times})| \le \epsilon_0 \in \varepsilon(0)$
+    \end{variableblock}
+  \end{columns}
+
+    \begin{center}
+      $\underset{T^a_{1}} {\mathrm{argmin}}$ $\mathcal{E}(T^a_{1}, T^a_{\times})$
+    \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Целевые оценки эффективности}
+    \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{$\top$}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      $\mathcal{E}^a_{t} = 1 - \frac{1}{N} \cdot \sum \limits_{i_{1} \in T^a_1} s(n)$,\\$
+s(n) = 
+\begin{cases}
+1, &\text{$a  \mathit{R} i^n_{1}, n=1..N$}\\ %, $i^n_1 \in I_{1}^a, i^n \in I_{0}^a$}\\
+0, &\text{иначе}.
+\end{cases}
+$
+    \end{variableblock}
+
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{Прогнозирование}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      $\mathcal{E}^a_{p} = \sum \limits_{i_{1} \in T^a_1} |\delta_0(a,i_{1}) - \delta_1(a,i_{1})|$
+    \end{variableblock}
+  \end{columns}
+\end{frame}
+
+
+%% \begin{frame}
+%% \frametitle{Рекомендательные системы. Формально. Задачи}
+%% \begin{block}{\textcolor{blue}{$\top$}}
+%%   $I' \subset I:$ $\{ i \in I' : \delta_0(a, i) > \Delta, $ $\delta_0(a, i) = \varnothing$ $\}$, $|I'| = N$, $a$ --- активный пользователь
+%% \end{block}
+
+%% \begin{block}{\textcolor{blue}{Прогнозирование}}
+%%   Вычисление $\delta_1(u^a, t_{\times}) : $ $|\delta_1(u^a, t_{\times}) - \delta_0(u^a, t_{\times})| \le \epsilon_0$
+%% \end{block}
+%% \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% chapter: fuzzy
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Представление контентов на базе теории нечетких множеств}
+  \begin{itemize}
+  \item $u^m = \{(x_i | \mu_m(x_i )) \}, \mu_m(x_i) \in [0,1], x \subseteq X$
+  \item $i^n = \{(y_i | \nu_n(y_i )) \}, \nu_n(y_i) \in [0,1], y \subseteq Y$
+  \item $u^1 \bigcap u^2 = u^3:$ $\forall$ $x \in X$ $\mu_3(c) = \min(\mu_1(x), \mu_2(x))$
+  \item $i^1 \bigcap i^2 = i^3:$ $\forall$ $y \in Y$ $\nu_3(c) = \min(\nu_1(x), \nu_2(x))$
+  \item {\it Пустой контент} $\varnothing$:  $\forall$ $c \in C$, $f(x) = 0, C \in \{X, Y\}, f \in \{\nu, \mu\}$
+  \item {\it Пересечение контентов} $e^1 \bigcap e^2 = e^3: \forall c \in C$ $f_3(x) = \min(f_1(x), f_2(x)), C \in \{X, Y\}, f \in \{\nu, \mu\}$
+  \item {\it Объединение контентов} $e^1 \bigcap e^2 = e^3: \forall c \in C$ $f_3(x) = \max(f_1(x), f_2(x)), C \in \{X, Y\}, f \in \{\nu, \mu\}$
+%  \item Контенты {\it сравнимы}, если их пересечение не является пустым контентом
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Отношение сходства во введенной модели}
+
+  \begin{block}{Обобщенное расстояние Хэмминга}
+    \begin{equation*}
+      \rho(e^1,e^2) = 
+      \begin{cases}
+        \varnothing, & e^1 \bigcap e^2 = \varnothing\\
+        \frac{1}{|C|} \cdot \sum \limits_{l=1}^{|C|} |f_1(c_l) - f_2(c_l)| \ne 0 & \text{иначе}, f_i(c_l)
+      \end{cases}
+    \end{equation*}
+  \end{block}
+
+  \begin{block}{Отношение сходства}
+    \begin{equation}\label{rhoSim}
+      e_1\mathit{R}e_2 \Leftrightarrow \rho(e_1, e_2) \le \epsilon_0 \in \varepsilon(0)
+    \end{equation}
+  \end{block}
+
+  \begin{block}{Взаимосвязь расстояния и оценки сходства}
+    \begin{equation}
+      \delta_0(e_1, e_2) = 1 - \rho(e_1, e_2)
+    \end{equation}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Отношение сходства во введенной модели. Свойства}
+\begin{variableblock}{$\rho(e_1, e_2)$ обладает метрическими свойствами}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}  
+\end{variableblock}
+
+  \begin{block}{Отношение сходства}
+    \begin{equation*}\label{rhoSim}
+      e_1\mathit{R}e_2 \Leftrightarrow \rho(e_1, e_2) \le \epsilon_0 \in \varepsilon(0)
+    \end{equation*}
+  \end{block}
+
+\begin{variableblock}{Утверждение}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red} 
+\begin{center}
+  Отношение сходства, заданное формулой \ref{rhoSim} является транзитивным.
+\end{center}
+\end{variableblock}
+
+%% \begin{variableblock}{Следствие}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red} 
+%% \begin{center}
+%%   Формализуя методы коллаборативных РС во введенной модели гарантируется выполнение необходимого и достаточного условия эффективности решения.
+%% \end{center}
+%% \end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Соотношение характеристик пользователей и объектов}
+  \begin{variableblock}{Оценка сходства характеристик}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    $\delta_c : X \times Y \Rightarrow [0,1]$
+  \end{variableblock}
+
+  \begin{equation}
+    \Psi :  U \rightarrow I
+  \end{equation}
+
+
+  \begin{equation}
+    \nu_{\Psi}(y) = \underset{x \in X} {\mathrm{\sup}} \min\{ \delta_c(x,y); \mu(x) \}
+  \end{equation}
+  
+  \begin{equation}
+    \Psi(u) = \{ (y | \nu_{\Psi}(y)) \}, y \in Y
+  \end{equation}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Соотношение характеристик пользователей и объектов. Пример}
+\tiny{
+\begin{block}{Дано:}
+  \begin{itemize}
+  \item $X = \{x_1=$ Наука, $x_2=$ Искусство $\}$, 
+  \item $Y = \{y_1=$ Каллиграфия, $y_2=$ Химия, $y_3=$Фольклор $\}$
+  \item
+    \begin{tabular}{|c|c|c|c|c|}
+      \hline
+    & $y_1$   & $y_2$ & $y_3$\\ \hline
+    $x_1$  &    0,3   & 1      & 0,5  \\ \hline
+    $x_2$  &    1     & 0,3    & 0,5  \\ \hline
+    \end{tabular}
+  \item $u^a = \{ (c_1 | 1); (c_2 | 0,5) \}$
+  \end{itemize}
+\end{block}
+
+\begin{block}{Решение:}
+\begin{itemize}
+\item $\nu(y_1) = \underset{x \in X} {\mathrm{\sup}}$ $\{ \min(0,3;1); \min(1;0,5)   \}$ = 0,5
+\item $\nu(y_2) = \underset{x \in X} {\mathrm{\sup}}$ $\{ \min(1;1);   \min(0,3;0,5) \}$ = 1
+\item $\nu(y_3) = \underset{x \in X} {\mathrm{\sup}}$ $\{ \min(0,5;1); \min(0,5;0,5) \}$ = 0,5
+\item $\Psi(a) = \{ (y_1 | 0,5); (y_2 | 1); (y_3 | 0,5) \}$
+\end{itemize}
+\end{block}
+}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Отношение сходства пользователя и объекта}
+\begin{variableblock}{Расстояние между пользователем и объектом}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red} 
+\begin{center}
+  $\rho(u,i) = \rho(\Psi(u), i)$
+\end{center}
+\end{variableblock}
+
+\begin{variableblock}{Оценка сходства пользователя и объекта}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red} 
+\begin{center}
+  $\delta_0(u,i) = 1 - \rho(\Psi(u), i)$
+\end{center}
+\end{variableblock}
+
+\begin{variableblock}{Отношение сходства пользователя и объекта}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red} 
+\begin{center}
+$u \mathit{R} i \Leftrightarrow$ $\rho(u,i) \le \epsilon_0$
+\end{center}
+\end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Оценка эффективности. Предпосылка}
+  \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Реальный пользователь: $a = \{(i^1, \rho(a, i^1)), (i^2, \rho(a, i^2)), ..., (i^n, \rho(a, i^n))\}$ \\
+      Прототип пользователя: $a_1 = \{(i^1, \rho_1(a_1, i^1)), (i^2, \rho_1(a_1, i^2)), ..., (i^n, \rho_1(a_1, i^n))\}$ \\
+      Тестовое множество: $\{ (i_{\times}, (1 - \rho(a, i_{\times})))  \}$, результирующее множество: $\{ (i_1, (1 - \rho(a, i_1)))  \}$ --- нечеткие множества.
+    \end{center}
+\end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Оценка эффективности качества работы РС}
+\begin{variableblock}{Определение:}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+\begin{center}
+$\mathcal{E}(T^a_{1}, T^a_{\times}) = \frac{1}{|N|} \cdot \sum \limits_{n=1}^N |\rho(a, i_{\times}^n) - \rho_{1}(a, i_1^n)| $
+\end{center}
+\end{variableblock}
+
+%% \begin{variableblock}{Для $\top$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+%% \begin{center}
+%% $T^a_{1}, T^a_{\times}$ упорядочены по возрастанию $\rho_1(a, i_1)$ и $\rho(a, i_{\times})$ соответственно.
+%% \end{center}
+%% \end{variableblock}
+
+\begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+  \begin{center}
+    Является метрической функцией на множестве $T^a_1 \times T^a_{\times}$
+  \end{center}
+\end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Целевые оценки эффективности}
+  \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{$\top$}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      $\mathcal{E}^a_{t} = 1 - \frac{1}{N} \cdot \sum \limits_{i_{1} \in T^a_1} s(n)$,\\$
+      s(n) = 
+      \begin{cases}
+        1, &\text{$a  \mathit{R} i^n_{1}, n=1..N$}\\ %, $i^n_1 \in I_{1}^a, i^n \in I_{0}^a$}\\
+        0, &\text{иначе}.
+      \end{cases}
+      $
+    \end{variableblock}
+    
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{Прогнозирование}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      $\mathcal{E}^a_{p} = \sum \limits_{i_{1} \in T^a_1} |\delta_0(a,i_{1}) - \delta_1(a,i_{1})|$
+    \end{variableblock}
+  \end{columns}
+    
+  \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+       \textcolor{red}{$\mathcal{E}^a_t$ коррелирует с $\mathcal{E}^a_t$ и $\mathcal{E}^a_p.$}
+    \end{center}
+  \end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Решение задач РС}
+  \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      Линейный поиск схожих объектов $a \mathit{R} i$.
+    \end{variableblock}
+
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      $\delta_0(a, i_{\times}) = 1 - \rho_1(a, i_{\times})$
+    \end{variableblock}
+  \end{columns}
+
+  \begin{variableblock}{Решения эффективны по критерию вычислительных затрат и $\mathcal{E}$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+  \end{variableblock}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% chapter: CF
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Классификация РС}
+  \begin{itemize}
+  \item Коллаборативные: 
+    \begin{enumerate}
+    \item Объектно-ориентированные, далее ОРС;
+    \item Субъектно-ориентированные, далее СРС;
+    \end{enumerate}
+  \item Кластерные;
+  \item Статистические: латентный анализ, факторный анализ, цепи Маркова, наивный Байесовский классификатор и т.д;
+  \item Машинное обучение;
+  \item Контентные;
+  \end{itemize}
+\end{frame}
+
+%13
+\begin{frame}
+  \frametitle{ОРС}
+  \begin{center}
+    \includegraphics[width=3in,height=3in]{pics/ors-filter.pdf}
+  \end{center}
+\end{frame}
+
+%14
+\begin{frame}
+  \frametitle{СРС}
+  \begin{center}
+    \includegraphics[width=4in,height=3in]{pics/srs-filter.pdf}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Эвристика моделей Модели КРС\footnote{	
+F. Ricci. Recommender Systems Handbook / F. Ricci, L. Rokach, B. Shapira, P. B. Kantor. // М.: Springer, 2011}}
+
+    \begin{block}{\textcolor{blue}{Модели КРС основаны на эвристических утверждениях} }
+    \begin{variableblock}{В общем виде РС определяет $\delta: U \times I \rightarrow [0,1]$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      В ОРС и СРС $\delta_1: U \times I \rightarrow [0,1]$ \textcolor{red}{не задается}.
+    \end{variableblock}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+  \scriptsize{
+    \frametitle{Эвристика схемы решения задачи $\top$}
+    \begin{variableblock}{В общем виде РС определяет $\delta: U \times I \rightarrow [0,1]$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      В ОРС и СРС $\delta_1: U \times I \rightarrow [0,1]$ \textcolor{red}{не задается}.
+    \end{variableblock}
+    
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+%% \hfill \break
+%% \hfill \break
+      \begin{variableblock}{Утверждение ОРС 1}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{equation}
+          a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow a \mathit{R} i_{\times}
+          \label{ors1}
+        \end{equation}
+      \end{variableblock}
+      
+        %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        %%   $T^a_0 = \{ i : a \mathit{R} i \}$
+        %% \end{variableblock}
+
+        %----------------------------------------------------------------
+      %%%% PREDICT
+        \column{.6\textwidth} % Left column and width
+      \begin{variableblock}{Определение схожих пользователей}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        $a\mathit{R}u \Leftrightarrow$ $\forall i: \delta_0(a, i) \ne \varnothing \wedge \delta_0(u, i) \ne \varnothing:$ \\
+        $|\delta_0(a, i) - \delta_0(u, i)| \le \epsilon_0$
+      \end{variableblock}
+
+      \begin{variableblock}{Утверждение СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{equation}
+              a\mathit{R}u \text{ для } T^a_0 \Rightarrow a\mathit{R}u \text{ для } T^a_{\times}
+          \end{equation}
+        \end{variableblock}
+          %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          %%   $T^a_0 = \{ (i, \delta_0(a, i) ) : \delta_0(a, i) \ne \varnothing \}$
+          %% \end{variableblock}
+    \end{columns}
+  }
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%
+% Решение top-N
+% %%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \scriptsize{
+    \frametitle{Схема решения задачи $\top$}
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      \begin{block}{\textcolor{blue}{ОРС. Кластер соседей $\mathcal{N}^0$ объектов множества $T^0$ }}
+        \includegraphics[width=2in,height=1.9in]{pics/ors-solve-topn.pdf}
+      \end{block}
+        \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          $T^a_0 = \{ (i, \delta_0(a, i)),  i : a \mathit{R} i \}$
+        \end{variableblock}
+        %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.6\textwidth} % Left column and width
+      \begin{block}{\textcolor{blue}{СРС. Кластер соседей активного пользователя $\mathcal{N}^a$} }
+        \includegraphics[width=2in,height=1.9in]{pics/srs-solve-topn.pdf}
+      \end{block}
+        \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          $T^a_0 = \{ (i, \delta_0(a, i) ) : \delta_0(a, i) \ne \varnothing \}$
+        \end{variableblock}
+    \end{columns}
+}
+\end{frame}
+
+\begin{frame}
+  \scriptsize{
+    \frametitle{Эвристика схемы решения задачи $\top$}
+    \begin{variableblock}{В общем виде РС определяет $\delta: U \times I \rightarrow [0,1]$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      В ОРС и СРС $\delta_1: U \times I \rightarrow [0,1]$ \textcolor{red}{не задается}.
+    \end{variableblock}
+    
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      %% \hfill \break
+      %% \hfill \break
+      \begin{variableblock}{Утверждение ОРС 1}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{equation}
+          a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow a \mathit{R} i_{\times}
+          \label{ors1}
+        \end{equation}
+      \end{variableblock}
+      
+      %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      %%   $T^a_0 = \{ i : a \mathit{R} i \}$
+      %% \end{variableblock}
+      
+      %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.6\textwidth} % Left column and width
+      \begin{variableblock}{Утверждение СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{equation}
+          a\mathit{R}u \text{ для } T^a_0 \Rightarrow a\mathit{R}u \text{ для } T^a_{\times}
+        \end{equation}
+      \end{variableblock}
+      %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      %%   $T^a_0 = \{ (i, \delta_0(a, i) ) : \delta_0(a, i) \ne \varnothing \}$
+      %% \end{variableblock}
+    \end{columns}
+      
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      \begin{variableblock}{Решение $\top$ в ОРС}{bg=YellowGreen,fg=black}{bg=YellowGreen,fg=blue} 
+        \begin{center}
+          $T^a_1$ --- множество соседей мощности $N$
+        \end{center}
+      \end{variableblock}
+      %----------------------------------------------------------------
+      %%%% PBLUEICT
+      \column{.6\textwidth} % Left column and width
+      \begin{variableblock}{Решение $\top$ в СРС}{bg=YellowGreen,fg=black}{bg=YellowGreen,fg=blue} 
+        \begin{center}
+          $T^a_1 = \{ i : u \mathit{R} i, u \in \mathcal{N}^a \}$, $|T^a_1| = N$
+        \end{center}
+      \end{variableblock}
+    \end{columns}
+  }
+\end{frame}
+
+% %%%%%%%%%%%%%%%%%%%%%%%
+% Решение прогнозирования
+% %%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \scriptsize{
+    \frametitle{Эвристика схемы решения задачи прогнозирования}
+    \begin{variableblock}{В общем виде РС определяет $\delta: U \times I \rightarrow [0,1]$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      В ОРС и СРС $\delta_1: U \times I \rightarrow [0,1]$ \textcolor{red}{не задается}.
+    \end{variableblock}
+
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.6\textwidth} % Left column and width
+        \begin{variableblock}{Утверждение ОРС 2}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{equation}
+            a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow |\delta_0(a, i_0) - \delta_0(a, i_{\times})| \le \epsilon_0
+          \end{equation}
+        \end{variableblock}
+        
+        %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        %%   $T^a_0 = \{ i : a \mathit{R} i \}$
+        %% \end{variableblock}
+        %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.5\textwidth} % Left column and width
+        \begin{variableblock}{Утверждение СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{equation}
+            a\mathit{R}u \text{ на } T^a_0 \Rightarrow a\mathit{R}u \text{ на } T^a_{\times}
+          \end{equation}
+        \end{variableblock}
+        %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        %%   $T^a_0 = \{ (i, \delta_0(a, i) ) : \delta_0(a, i) \ne \varnothing \}$
+        %% \end{variableblock}
+    \end{columns}
+}
+\end{frame}
+
+\begin{frame}
+  \scriptsize{
+    \frametitle{Схема решения задачи прогнозирования оценки сходства $\delta_0(a, i_{\times})$}
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      \begin{block}{\textcolor{blue}{ОРС. Кластер соседей $\mathcal{N}^{\times}$ прогнозируемого объекта $i_{\times}$} }
+        \includegraphics[width=2in,height=1.5in]{pics/ors-solve-p.pdf}
+      \end{block}
+        \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          $T^a_0 = \{ (i, \delta_0(a, i))\}$
+        \end{variableblock}
+        %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.6\textwidth} % Left column and width
+      \begin{block}{\textcolor{blue}{СРС. Кластер соседей активного пользователя $\mathcal{N}^a$} }
+        \includegraphics[width=2in,height=1.5in]{pics/srs-solve-topn.pdf}
+      \end{block}
+
+        \begin{variableblock}{Дополнительное условие}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{center}
+          $u \in \mathcal{N}^a$, если $\exists$ $\delta_0(u, i_{\times})$
+        \end{center}
+      \end{variableblock}
+    \end{columns}
+}
+\end{frame}
+
+\begin{frame}
+  \scriptsize{
+    \frametitle{Решение задачи прогнозирования}
+    \begin{variableblock}{В общем виде РС определяет $\delta: U \times I \rightarrow [0,1]$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      В ОРС и СРС $\delta_1: U \times I \rightarrow [0,1]$ \textcolor{red}{не задается}.
+    \end{variableblock}
+
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.6\textwidth} % Left column and width
+        \begin{variableblock}{Утверждение ОРС 2}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{equation}
+            a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow |\delta_0(a, i_0) - \delta_0(a, i_{\times})| \le \epsilon_0
+          \end{equation}
+        \end{variableblock}
+        
+        %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        %%   $T^a_0 = \{ i : a \mathit{R} i \}$
+        %% \end{variableblock}
+        %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.5\textwidth} % Left column and width
+        \begin{variableblock}{Утверждение СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{equation}
+            a\mathit{R}u \text{ на } T^a_0 \Rightarrow a\mathit{R}u \text{ на } T^a_{\times}
+          \end{equation}
+        \end{variableblock}
+        %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        %%   $T^a_0 = \{ (i, \delta_0(a, i) ) : \delta_0(a, i) \ne \varnothing \}$
+        %% \end{variableblock}
+    \end{columns}
+
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      \begin{variableblock}{Решение задачи прогнозирования в ОРС}{bg=YellowGreen,fg=black}{bg=YellowGreen,fg=blue}
+        \begin{center}
+          $\delta_1(a, i_{\times}) = p(\{ \delta_0(a, i), i \in \mathcal{N}^{\times} \})$ 
+        \end{center}
+      \end{variableblock}
+
+      \begin{variableblock}{Решение задачи прогнозирования в СРС}{bg=YellowGreen,fg=black}{bg=YellowGreen,fg=blue}
+        \begin{equation}\label{fpredict-ors}
+          \frac{\sum \limits_{i \in \mathcal{N}^{\times}} \delta_{1}(i,i_{\times}) \cdot \delta_0(a,i)}{
+            \sum \limits_{i \in \mathcal{N}^{\times}} \delta_{1}(i,i_{\times})
+          }
+        \end{equation}
+      \end{variableblock}
+      %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.6\textwidth} % Left column and width
+      \begin{variableblock}{Прогнозная оценка}{bg=YellowGreen,fg=black}{bg=YellowGreen,fg=blue}
+        \begin{center}
+          $\delta_1(a, i_{\times}) = p(\{ \delta_0(p, i_{\times}), u \in \mathcal{N}^a \})$ 
+        \end{center}
+      \end{variableblock}
+
+      \begin{variableblock}{Функция прогнозирования}{bg=YellowGreen,fg=black}{bg=YellowGreen,fg=blue}
+        \begin{equation}
+          \overline{\delta^a} + 
+          \frac{ \sum \limits_{i \in \mathcal{N}^a} \delta_{1}(a, u^k) \cdot (\delta_0(u,i_{\times}) - \overline{\delta^k}) } 
+               { \sum \limits_{u \in \mathcal{N}^a} | \delta_{1}(a, u^k) | } 
+        \end{equation}
+        $\overline{\delta^a}$ --- средняя оценка активного пользователя, $\overline{\delta^k}$ --- средняя оценка пользователя $u^k$. 
+
+      \end{variableblock}
+    \end{columns}
+  }
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%
+% Оценки эффективности
+%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Оценки эффективности $\mathcal{E}_p$ задачи прогнозирования}
+    \begin{variableblock}{Целевая оценка эффективности}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+      $\mathcal{E}^a_{p} = \sum \limits_{i_{1} \in T^a_1} |\delta_0(a,i_{1}) - \delta_1(a,i_{1})|$
+    \end{variableblock}
+
+  \begin{variableblock}{Используемые оценки}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{itemize}
+    \item $MAE = \frac{1}{M} \cdot \sum \limits_{j=1}^M |\delta_1(a, i^j_{\times})  - \delta_0(a, i^j_{\times})|$
+    \item $RMSE = \sqrt{\frac{1}{M} \cdot \sum \limits_{j=1}^M (\delta_1(a, i^j_{\times})  - \delta_0(a, i^j_{\times}))^2}$
+    \item $M$ --- число проведенных прогнозов.
+    \end{itemize}
+  \end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Целевая оценка эффективности задачи $\top$}
+  \begin{variableblock}{$\top$}{bg=SpringGreen,fg=black}{bg=blue,fg=white}
+    $\mathcal{E}^a_{t} = 1 - \frac{1}{N} \cdot \sum \limits_{i_{1} \in T^a_1} s(n)$,\\$
+    s(n) = 
+    \begin{cases}
+      1, &\text{$a  \mathit{R} i^n_{1}, n=1..N$}\\ %, $i^n_1 \in I_{1}^a, i^n \in I_{0}^a$}\\
+      0, &\text{иначе}.
+    \end{cases}
+    $
+  \end{variableblock}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Объектно-ориентированная оценки эффективности $\mathcal{E}^i_{t}$}
+  \begin{variableblock}{В общем виде РС определяет $\delta: U \times I \rightarrow [0,1]$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    В ОРС и СРС $\delta_1: U \times I \rightarrow [0,1]$ \textcolor{red}{не задается}.
+  \end{variableblock}
+
+  \begin{variableblock}{Основаны на утверждении ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{center}
+          $a  \mathit{R} i_{\times} \wedge i_1 \mathit{R} i_{\times} \Rightarrow a \mathit{R} i_1$
+        \end{center}
+      \end{variableblock}
+
+  $
+  s(n) = 
+  \begin{cases}
+    1, &\text{$\exists$ $i_{\times} \in T^a_{\times}$: $i^n_{1} \mathit{R} i_{\times}, n=1..N$}\\ %, $i^n_1 \in I_{1}^a, i^n \in I_{0}^a$}\\
+    0, &\text{иначе}.
+  \end{cases}
+  $
+\end{frame}
+
+\begin{frame}
+  \frametitle{Используемые оценки эффективности задачи $\top$}
+  \begin{itemize}
+  \item Точность: $1 - \frac{1}{N} \cdot \sum \limits_{n=1}^N s(i_1^n)$;
+  \item Точность по списку длины $L$: $P@L = 1 - \frac{1}{L} \cdot \sum \limits_{n=1}^L s(n)$.
+  \item $AveP: \frac{1}{\sum \limits_{n=1}^{N} s(n)} \cdot \sum \limits_{L=1}^{N} P@L$.
+  \item $NDCG: 1 - \frac{DCG}{IDCG}$, где $DCG = s(1) + \sum \limits_{n=2}^N \frac{s(n)}{log_2(n)}$.
+    $IDCG$ --- идеальное $DCG$, для которого $\forall$ $n=1..N$ $r(n) = 1$.
+  \end{itemize}
+\end{frame}
+
+%% \begin{frame}
+%% %ToDo график где по y оценка, по x - K
+%%   \frametitle{Обобщенная оценка эффективности решения задачи $\top$}
+%%   \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+%%     \begin{center}
+%%       Целевая оценка эффективности задачи $top-N$ --- \\ функция $\mathcal{E}^a_{t}(K)$
+%%     \end{center}
+%%   \end{variableblock}
+
+%%   \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+%%     \begin{center}
+%%       Объектно-ориентированная оценка эффективности задачи $top-N$ --- \\ функция $\mathcal{E}^i_{t}(K)$
+%%     \end{center}
+%%   \end{variableblock}
+
+%%   \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+%%     \begin{center}
+%%       Metrics within each equivalency class were strongly correlated, while metrics from different equivalency
+%%       classes were uncorrelated.\footnote{
+%%         J. L. Herlocker. Evaluating collaborative filtering recommender systems. / 
+%%         J. L. Herlocker, J. A. Konstan, L. G. Terveen, J. Riedl // ACM Trans. Inf. Syst Т 22(1), pp 5-53, 2004}
+%%     \end{center}
+%%   \end{variableblock}
+
+%% \end{frame}
+
+\begin{frame}
+  \frametitle{Корреляция $\mathcal{E}^i_{t}$ и $\mathcal{E}^a_{t}$}
+
+    %% \begin{equation}\label{use-e0-1}
+    %%   \mathcal{E}^i_{t} < \epsilon_1 \Rightarrow \mathcal{E}^a_{t} < \epsilon_1
+    %% \end{equation}
+    %%     \end{variableblock}
+
+    %%     \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    %%       \begin{equation}\label{use-e0-2}
+    %%         \mathcal{E}^a_{t} < \epsilon_1 \Rightarrow \mathcal{E}^i_{t} < \epsilon_1 
+    %%       \end{equation}
+    %%     \end{variableblock}
+  \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Значения $\mathcal{E}^i_{t}$ объективны, если $\mathcal{E}^i_{t}$ коррелирует $\mathcal{E}^a_{t}$
+    \end{center}
+  \end{variableblock}
+
+  \begin{variableblock}{Утверждение о применимости $\mathcal{E}^i_{t}$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Необходимым и достаточным условием применения оценки эффективности $\mathcal{E}^i_{t}$ является выполнение утверждения 
+      ОРС 1:\\
+      $a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow a \mathit{R} i_{\times}$
+    \end{center}
+  \end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{История действий пользователя $T^a_0$.}
+      \begin{columns}[T]
+      %%%% \TOPN
+      \column{.6\textwidth} % Left column and width
+      \begin{variableblock}{Утверждение ОРС 1}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{equation*}
+          a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow a \mathit{R} i_{\times}
+          \label{ors1}
+        \end{equation*}
+      \end{variableblock}
+
+      \begin{variableblock}{Утверждение ОРС 2}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{equation*}
+          a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow |\delta_0(a, i_0) - \delta_0(a, i_{\times})| \le \epsilon_0
+        \end{equation*}
+      \end{variableblock}
+      
+      \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        $T^a_1 = \{ (i_1, 1),  i_1 : i_0 \mathit{R} i_1, i_0 \in T^a_0 \}$
+      \end{variableblock}
+
+  
+        %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        %%   $T^a_0 = \{ i : a \mathit{R} i \}$
+        %% \end{variableblock}
+        %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.5\textwidth} % Left column and width
+        \begin{variableblock}{Утверждение СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{equation*}
+            a\mathit{R}u \text{ на } T^a_0 \Rightarrow a\mathit{R}u \text{ на } T^a_{\times}
+          \end{equation*}
+        \end{variableblock}
+        %% \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        %%   $T^a_0 = \{ (i, \delta_0(a, i) ) : \delta_0(a, i) \ne \varnothing \}$
+        %% \end{variableblock}
+    \end{columns}
+
+ \end{frame}
+
+\begin{frame}
+  \frametitle{Свойства входных данных}
+  \begin{block}{}
+    \begin{center}
+      \underline{Данные меняются во времени}
+    \end{center}
+  \end{block}
+
+  \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{Влияние на ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=blue}
+      $a \mathcal{R} i_0 \wedge i_0 \mathcal{R} i_{\times}, \delta(a, i_{\times}) \le \Delta$
+    \end{variableblock}
+    \column{.5\textwidth} % Left column and width
+    
+    \begin{variableblock}{Влияние на СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=blue}
+      $a\mathit{R}u \text{ для } T^a_0$ $\wedge$ $\delta_0(a, u) \le \Delta$ для $T^a_{\times}$
+    \end{variableblock}
+  \end{columns}
+
+  \begin{block}{}
+    \begin{center}
+      \underline{Предпочтения пользователя неоднородны}
+    \end{center}
+  \end{block}
+
+  \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{Влияние на ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=blue}
+      $\exists$ $i_0,i_{\times}:$ $a \mathcal{R} i_0 \wedge a \mathcal{R} i_{\times}$, $\delta_0(i_0, i_{\times}) \le \Delta$.
+    \end{variableblock}
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{Влияние на СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=blue}
+      $a\mathit{R}u^1$ $\wedge$ $a\mathit{R}u^2$, при этом $\delta_1(u^1, u^2) \le \Delta$ 
+      % $a\mathit{R}u \text{ для } T^1_0$ $\wedge$ $\delta_0(a, u) \le \Delta$ для $T^2_0$, где $T^a_0 = T^1_0 \bigcup T^2_0$
+    \end{variableblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Свойства входных данных. Динамика}
+    \begin{variableblock}{Данные меняются во времени. Последствия для ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      $a \mathcal{R} i_0 \wedge i_0 \mathcal{R} i_{\times}, \delta(a, i_{\times}) \le \Delta$
+    \end{variableblock}
+
+    \begin{variableblock}{Данные меняются во времени. Последствия для СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      $a\mathit{R}u \text{ для } T^a_0$ $\wedge$ $\delta_0(a, u) \le \Delta$ для $T^a_{\times}$
+    \end{variableblock}
+ \end{frame}
+
+\begin{frame}
+  \frametitle{Свойства входных данных. Неоднородность предпочтений}
+    \begin{variableblock}{Предпочтения пользователя неоднородны. Последствия для ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      $\exists$ $i_0,i_{\times}:$ $a \mathcal{R} i_0 \wedge a \mathcal{R} i_{\times}$, $\delta_0(i_0, i_{\times}) \le \Delta$.
+    \end{variableblock}
+
+    \begin{variableblock}{Предпочтения пользователя неоднородны. Последствия для СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      $a\mathit{R}u^1$ $\wedge$ $a\mathit{R}u^2$, при этом $\delta_1(u^1, u^2) \le \Delta$ 
+      % $a\mathit{R}u \text{ для } T^1_0$ $\wedge$ $\delta_0(a, u) \le \Delta$ для $T^2_0$, где $T^a_0 = T^1_0 \bigcup T^2_0$
+    \end{variableblock}
+ \end{frame}
+
+\begin{frame}
+  \frametitle{Свойства входных данных. Влияние}
+  \begin{variableblock}{Утверждение о применимости $\mathcal{E}^i_{t}$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Необходимым и достаточным условием применения оценки эффективности $\mathcal{E}^i_{t}$ является выполнение утверждения 
+      ОРС 1:\\
+      $a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow a \mathit{R} i_{\times}$
+    \end{center}
+  \end{variableblock}
+
+  \begin{variableblock}{}{bg=SpringGreen,fg=red}{bg=blue,fg=red}
+    \begin{itemize}
+    \item Эвристические утверждения могут не выполниться: потенциальное ухудшение эффективности решения.
+    \item Нарушение объективного условия применения оценки эффективности $\mathcal{E}^i_t$.
+    \end{itemize}
+  \end{variableblock}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Необходимое и достаточное условие эффективности
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \scriptsize{
+    \frametitle{Схема решения задачи $\top$}
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      \begin{block}{\textcolor{blue}{ОРС. Кластер соседей $\mathcal{N}^0$ объектов множества $T^0$ }}
+        \includegraphics[width=2in,height=1.9in]{pics/ors-solve-topn.pdf}
+      \end{block}
+        \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          $T^a_0 = \{ (i, \delta_0(a, i)),  i : a \mathit{R} i \}$
+        \end{variableblock}
+        %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.6\textwidth} % Left column and width
+      \begin{block}{\textcolor{blue}{СРС. Кластер соседей активного пользователя $\mathcal{N}^a$} }
+        \includegraphics[width=2in,height=1.9in]{pics/srs-solve-topn.pdf}
+      \end{block}
+        \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          $T^a_0 = \{ (i, \delta_0(a, i) ) : \delta_0(a, i) \ne \varnothing \}$
+        \end{variableblock}
+    \end{columns}
+}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Условия эффективности решений задачи $\top$}
+  \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    Необходимым и достаточным условием эффективности решения задачи $\top$ является выполнение транзитивности отношения сходства 
+    объектов на множестве $T^a_0 \bigcup T^a_1 \bigcup T^a_{\times}$:
+    \begin{equation}
+      i_0 \mathit{R} i_{1} \wedge i_0 \mathit{R} i_{\times}  \Rightarrow i_{1} \mathit{R} i_{\times}
+    \label{transAssert1}
+    \end{equation}
+  \end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \scriptsize{
+    \frametitle{Схема решения задачи прогнозирования оценки сходства $\delta_0(a, i_{\times})$}
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      \begin{block}{\textcolor{blue}{ОРС. Кластер соседей $\mathcal{N}^{\times}$ прогнозируемого объекта $i_{\times}$} }
+        \includegraphics[width=2in,height=1.5in]{pics/ors-solve-p.pdf}
+      \end{block}
+        \begin{variableblock}{Вид обучающего множества}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          $T^a_0 = \{ (i, \delta_0(a, i))\}$
+        \end{variableblock}
+        %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.6\textwidth} % Left column and width
+      \begin{block}{\textcolor{blue}{СРС. Кластер соседей активного пользователя $\mathcal{N}^a$} }
+        \includegraphics[width=2in,height=1.5in]{pics/srs-solve-topn.pdf}
+      \end{block}
+
+        \begin{variableblock}{Дополнительное условие}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{center}
+          $u \in \mathcal{N}^a$, если $\exists$ $\delta_0(u, i_{\times})$
+        \end{center}
+      \end{variableblock}
+    \end{columns}
+}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Условия эффективности решений задачи прогнозирования}
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      \begin{variableblock}{ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        %Выполнение транзитивности отношения сходства объектов на кластере соседей $\mathcal{N}^{\times}$ прогнозирвуемого объекта
+        \begin{assert}
+          Достаточным условием эффективности решения прогнозирования является выполнение транзитивности отношения сходства объектов на множестве $\mathcal{N}^{\times}$:
+          \begin{equation}\label{suff-cond-pred-ors}
+            i_{\times} \mathit{R} i^1 \wedge i_{\times} \mathit{R} i^2  \Rightarrow i^1 \mathit{R} i^2, i^m \in \mathcal{N}^{\times}
+          \end{equation}
+        \end{assert}
+      \end{variableblock}
+        %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.6\textwidth} % Left column and width
+        \begin{variableblock}{СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+            %Выполнение транзитивности отношения сходства между ползователями кластера соседей $\mathcal{N}^a$ активного пользователя
+            \begin{assert}
+              Необходимым и достаточным условием эффективности решения задачи прогнозирования является выполнение транзитивности отношения сходства 
+              пользователей на множестве соседей активного пользователя $\mathcal{N}$:
+              \begin{equation}\label{nec-cond-pred-srs}
+                a \mathit{R} u^1 \wedge a \mathit{R} u^2  \Rightarrow u^1 \mathit{R} u^2, u^m \in \mathcal{N}
+              \end{equation}
+            \end{assert}
+        \end{variableblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Выполнимость условий эффективности решений}
+  \begin{variableblock}{Зависит $\delta_1$ и $\Delta$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Традиционные функции, используемые в качестве $\delta_1$: косинус и коэффициент корреляции Пирсона.
+    \end{center}
+  \end{variableblock}
+
+    \begin{variableblock}{Транзитивность при использовании косинуса}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      $\Delta = 0.49$ $\wedge$ $\delta_0(i^1_0, i^2_0) = 0.5$ $\wedge$ $\delta_0(i^1_0, i_{\times}) = 0.5 \cancel{\Rightarrow} \delta_0(i^2_0, i_{\times}) > \Delta$.
+    \end{center}
+  \end{variableblock}
+
+  \begin{variableblock}{Транзитивность при использовании коэффициента корреляции Пирсона}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Оценка сходства, использующая коэффициент корреляции Пирсона не обладает свойством транзитивности 
+\footnote{A. Castro Sotos, S. Vanhoof, W. Van den Noortgate, P. Onghena.  The non-transitivity of Pearson's correlation coefficient: an educational perspective. // 
+Proceedings of the 56th Session of the ISI / Т 62, C 4609-4613}.
+    \end{center}
+  \end{variableblock}
+
+  \begin{variableblock}{}{bg=SpringGreen,fg=red}{bg=blue,fg=red}
+    \begin{center}
+      Эффективное решение для любых ОРС и СРС не гарантируется.
+    \end{center}
+  \end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Асимптотическая сложность алгоритмов\footnote{G. Linden, B. Smith and J. York. Amazon.com recommendations: 
+item-to-item collaborative filtering. // Internet Computing 7:1 / С 76-80, 2003}}
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.5\textwidth} % Left column and width
+      \begin{variableblock}{ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        Для решения строится матрица $\mathcal{M}^m_n = \delta_1(i^m, i^n)$. Асимптотическая сложность $O(|I|^2)$.
+      \end{variableblock}
+
+      \column{.6\textwidth} % Left column and width
+      \begin{variableblock}{СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        Решение основано на линейном поиске соседей. Асимптотическая сложность $O(|U|)$.
+      \end{variableblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Решение задач РС}
+  \begin{columns}[T]
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      Линейный поиск схожих объектов.
+    \end{variableblock}
+
+    \column{.5\textwidth} % Left column and width
+    \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+      $\delta_0(a, i_{\times}) = 1 - \rho_1(a, i_{\times})$
+    \end{variableblock}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Сравнение асимптотических сложностей решений}
+  \begin{center}
+    \begin{table}[h]
+      \begin{tabular}{|c|c|c|c|}
+        \hline	
+        Модель & Задача & Сложность  \\ \hline
+        ОРС & $\top$ & $O(|T|^2)$  \\ \hline
+        ОРС & Прогнозирование & $O(|T|^2)$ \\ \hline
+        СРС & $\top$ & $O(|U|)$ \\ \hline
+        СРС & Прогнозирование & $O(|U|)$ \\ \hline
+        Нечеткая & $\top$ & $O(|T|)$ \\ \hline
+        Нечеткая & Прогнозирование & $O(C)$ \\ \hline
+      \end{tabular}
+    \end{table}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Выводы}
+  \begin{itemize}
+    \item Коллаборативные модели не гарантируют эффективность по критерию устойчивости при динамике и неоднородности данных.
+    \item Коллаборативные модели для люых параметров $\delta_1$ и $\Delta$ не гарантируют эффективный результат.
+    \item В общем случае оценка эффективности $\mathcal{E}^i_t$ может быть необъективной.
+    \item Коллаборативные модели не обладают высокой масштабируемостью. 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Отношение сходства во введенной модели. Свойства}
+\begin{variableblock}{$\rho(e_1, e_2)$ обладает метрическими свойствами\footnote{
+А. Кофман. Введение в теорию нечетких множеств // М.: Радио и связь, 1982. 432 c}
+}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}  
+\end{variableblock}
+
+\begin{variableblock}{Утверждение}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red} 
+\begin{center}
+  Отношение сходства, заданное формулой \ref{rhoSim} является транзитивным.
+\end{center}
+\end{variableblock}
+
+\begin{variableblock}{Следствие}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red} 
+\begin{center}
+  Формализуя методы коллаборативных РС во введенной модели, гарантируется выполнение необходимого и достаточного условия эффективности решения.
+\end{center}
+\end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Модификация алгоритма составления множества соседей}
+  \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{equation}
+      e_1\mathit{R}e_2 \Leftrightarrow \rho(e_1, e_2) \le \epsilon_0 \in \varepsilon(0)
+    \end{equation}
+  \end{variableblock}
+
+  \begin{variableblock}{Дополнительное условие добавления элемента в множество соседей $\mathcal{N}$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{equation*}\label{method}
+      e \mathit{R} c \wedge e \mathit{R} e^{\bigcup} \wedge e \mathit{R} e^{\bigcap}, 
+    \end{equation*}
+  \end{variableblock}
+
+    \begin{itemize}
+      \item $c$ --- центр множества соседей.
+      \item $c^{\bigcup} = e^1 \bigcup e^2 \bigcup ... e^{M} \bigcup e$, $e^j \in \mathcal{N}, j=1..M$.
+      \item $c^{\bigcap} = e^1 \bigcap e^2 \bigcap ... e^{M} \bigcap e$, $e^j \in \mathcal{N}, j=1..M$.  
+    \end{itemize}
+
+    \begin{assert}
+      Введенная модификация гарантирует выполнение необходимых и достаточных условий, накладываемых на отношение сходства в кластерах соседей.
+    \end{assert}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Корреляция $\mathcal{E}$ и $\mathcal{E}^i_t$}
+  \begin{variableblock}{Утверждение о применимости $\mathcal{E}^i_{t}$}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Необходимым и достаточным условием применения оценки эффективности $\mathcal{E}^i_{t}$ является выполнение утверждения 
+      ОРС 1:\\
+      $a \mathit{R} i_0 \wedge i_0 \mathit{R} i_{\times} \Rightarrow a \mathit{R} i_{\times}$
+    \end{center}
+  \end{variableblock}
+  
+  \begin{variableblock}{Утверждение}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Оценка с $\mathcal{E}$ коррелирует с $\mathcal{E}^i_t$, если выполняется условие применимости $\mathcal{E}^i_t$.
+    \end{center}
+  \end{variableblock}
+
+  \begin{variableblock}{Утверждение}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Оценка с $\mathcal{E}$ может использоваться для различного класса задач.
+    \end{center}
+  \end{variableblock}
+
+  \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{center}
+      Применение $\mathcal{E}$ не обусловлено дополнительными ограничениями такими, как свойства входных данных.
+    \end{center}
+  \end{variableblock}
+\end{frame}
+  
+%% \begin{frame}
+%%   \frametitle{Выводы. Плюсы и минусы}
+%% \end{frame}
+
+\begin{frame}
+  \frametitle{Множество данных MovieLens}
+  \begin{itemize}
+    \item $|U|$ = 6000
+    \item $|T|$ = 10000 --- множество фильмов
+    \item $| \{ \delta_0(u^m, i^n) \} |$ = 1 000 000
+    \item $|Y| = 18$ --- множество кинематографических жанров; 
+    \item $X$ --- оценки пользователей;
+    \item $\nu_l(y_i) = \{0,1\}$
+    \item Существующие данные удовлетворяют КРС: $u = \{ (i, \delta_0(u, i)) \}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Составление контента пользователя для множества Movie Lens в нечеткой модели}
+  \begin{block}{}
+    Предполагается, что между оценкой пользователя и жанрами, характерными для объекта существует корреляция.
+  \end{block}
+
+
+  \begin{block}{$\nu(y_k) = \underset{x \in X} {\mathrm{\sup}} \min\{ \delta_c(x,y); \mu(x) \}, \delta_c : T_0 \times Y \rightarrow [0,1]$} 
+    $\nu(y_k) = \underset{i \in T_0} {\mathrm{\sup}} \min\{ \delta_c(i,y_k) : \nu_i(y_k) = 1; \delta_0(u, i) \}$ \\
+
+    $\delta_c(i, y_k) = |\{ i : \delta_0(u, i) > \Delta, \nu(y_k) = 1\}| - |\{ i : \delta_0(u, i) < \Delta_1, \nu(y_k) = 1 \}|$,
+    $\Delta = 0.8$, $\Delta_1 = 0.6$
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Сравнение коллаборативных моделей и коллаборативных моеделей, формализоавнных в нечеткой модели}
+\scriptsize{
+    \begin{columns}[T]
+      \column{.6\textwidth} % Left column and width
+      \begin{variableblock}{Задача $\top$. ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{table}[h] 
+          \begin{center}
+            \begin{tabular}{|c|c|c|c|c|}
+              \hline	
+              Модель & P & AveP & NDCG  \\ \hline
+              ОРС & 0.0105 & 0.011  & 0.0419  \\ \hline
+              Нечеткая ОРС  & 0.0004 &  0.0004 & 0.0318  \\ \hline
+            \end{tabular}
+          \end{center}
+        \end{table}
+      \end{variableblock}
+
+      \column{.5\textwidth} % Left column and width
+      \begin{variableblock}{Задача $\top$. СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{table}[h] 
+            \begin{center}
+              \label{testResult:predict-trans-ors}
+            \begin{tabular}{|c|c|c|c|c|}
+              \hline	
+              Модель & P & AveP & NDCG  \\ \hline
+              СРС & 0.0185 & 0.018  & 0.0392  \\ \hline
+              Нечеткая СРС & 0.0057 &  0.007 & 0.0368  \\ \hline
+            \end{tabular}
+            \end{center}
+          \end{table}
+      \end{variableblock}
+    \end{columns}
+      %----------------------------------------------------------------
+      %%%% PREDICT
+    \begin{columns}[T]
+      \column{.6\textwidth} % Left column and width
+      \begin{variableblock}{Задача прогнозирования. ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{table}[h] 
+          \begin{center}
+            \begin{tabular}{|c|c|c|}
+              \hline	
+              Модель      & MAE & RMSE \\ \hline
+              ОРС         &  0.184 & 0.225  \\ \hline
+              Нечеткая ОРС &  0.178 & 0.22  \\ \hline
+            \end{tabular}
+        \end{center}
+        \end{table}
+      \end{variableblock}
+            
+      \column{.5\textwidth} % Left column and width
+      \begin{variableblock}{Задача прогнозирования. СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{table}[h] 
+          \begin{center}
+            \begin{tabular}{|c|c|c|}
+              \hline	
+              Модель      & MAE & RMSE \\ \hline
+              Традиционный & 0.168 & 0.222  \\ \hline
+              Нечеткая СРС & 0.155  & 0.213  \\ \hline
+            \end{tabular}
+          \end{center}
+        \end{table}
+        \end{variableblock}
+      \end{columns}
+
+      \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{table}[h] 
+          \begin{center}
+            $e^1 \mathit{R} e^2 \Leftrightarrow \rho_1(e^1,e^2) < 0.1$\\
+            $e^1 \mathit{R} e^2 \Leftrightarrow \delta_1(e^1,e^2) > 0.9$
+          \end{center}
+        \end{table}
+        \end{variableblock}
+}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Эффективность применения модифицированного алгоритма построения кластера соседей}
+  \scriptsize{
+      \begin{variableblock}{Задача $\top$. СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{table}[h] 
+          \begin{center}
+            \begin{tabular}{|c|c|c|c|}
+              \hline	
+              Алгоритм & P & AveP & NDCG  \\ \hline
+              Традиционный & 0.0185 & 0.018  & 0.0392  \\ \hline
+              Модифицированный & 0.0171 & 0.017  & 0.0382 \\ \hline
+            \end{tabular}
+          \end{center}
+        \end{table}
+      \end{variableblock}
+
+    \begin{columns}[T]
+      %%%% \TOPN
+      \column{.6\textwidth} % Left column and width
+
+      \begin{variableblock}{Задача прогнозирования. ОРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{table}[h] 
+            \begin{center}
+              \begin{tabular}{|c|c|c|}
+                \hline	
+                Тип & MAE & RMSE \\ \hline
+                Традиционный ОРС & 0.184 & 0.225  \\ \hline
+                Модифицированный & 0.182  & 0.220  \\ \hline
+              \end{tabular}
+            \end{center}
+          \end{table}
+      \end{variableblock}
+      %----------------------------------------------------------------
+      %%%% PREDICT
+      \column{.6\textwidth} % Left column and width
+        \begin{variableblock}{Задача прогнозирования. СРС}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+          \begin{table}[h] 
+        \begin{center}
+          \begin{tabular}{|c|c|c|}
+            \hline	
+            Тип & MAE & RMSE \\ \hline
+            Традиционный & 0.168 & 0.222  \\ \hline
+            Модифицированный & 0.162 & 0.214 \\ \hline
+          \end{tabular}
+        \end{center}
+      \end{table}
+      \end{variableblock}
+    \end{columns}
+      \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+        \begin{table}[h] 
+          \begin{center}
+            $e^1 \mathit{R} e^2 \Leftrightarrow \rho_1(e^1,e^2) < 0.5$\\
+            $e^1 \mathit{R} e^2 \Leftrightarrow \delta_1(e^1,e^2) > 0.9$
+          \end{center}
+        \end{table}
+        \end{variableblock}
+}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Сравнение КРС и нечеткой модели. Задача $\top$}
+  \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{table}[h] 
+      \begin{center}
+        \begin{tabular}{|c|c|c|c|c|}
+          \hline	
+          Условия выполняются/&&&&\\Модель & P & AveP & NDCG & $\mathcal{E}$ \\ \hline
+          Да/ОРС ($cos$) & 0.0105 & 0.011  & 0.0419 & 0.57 \\ \hline
+          Да/Нечеткая &&&&\\модель & 0.0472 & 0.053 & 0.0693 & 0.079 \\ \hline
+          Нет/ОРС ($cos$) & 0.5619 & 0.5986  & 0.5921 & 0.7114 \\ \hline
+          Нет/Нечеткая &&&&\\модель & 0.0472 & 0.053 & 0.0693 & 0.079 \\ \hline
+          Случайное &&&&\\ решение  & 0.7141& 0.7994 & 0.7541 & 0.5632 \\ \hline
+        \end{tabular}
+      \end{center}
+    \end{table}
+  \end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Сравнение КРС и нечеткой модели. Задача прогнозирования}
+  \begin{variableblock}{}{bg=SpringGreen,fg=black}{bg=SpringGreen,fg=red}
+    \begin{table}[h] 
+      \begin{center}
+        \begin{tabular}{|c|c|c|}
+          \hline	
+          Условие выполняется/Модель & MAE & RMSE \\ \hline
+          Да/СРС ($cos$) & 0.164 & 0.215  \\ \hline
+          Да/Нечеткая модель & 0.183 & 0.247  \\ \hline
+          Нет/СРС (Пирсон) &  0.191  & 0.25  \\ \hline
+          Нет/Нечеткая модель & 0.183 & 0.247  \\ \hline
+          Случайное решение  & 0.253 & 0.31 \\ \hline
+        \end{tabular}
+      \end{center}
+    \end{table}
+  \end{variableblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Веб-интерфейс пользователя разработанной кинематографической РС. Выбор кинематографических жанров}
+  \begin{center}
+    \includegraphics[width=3in,height=2.5in]{pics/ml-interface.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Веб-интерфейс кинематографической РС. Результат запроса и интерфейс работы с ним}
+  \begin{center}
+    \includegraphics[width=3in,height=2.5in]{pics/ml-rslt.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Веб-интерфейс пользователя разработанной музыкальной РС. Выбор музыкальных жанров}
+  \begin{center}
+    \includegraphics[width=4.5in,height=2.5in]{pics/lastfm-interface.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Веб-интерфейс музыкальной РС. Результат запроса и интерфейс работы с ним}
+  \begin{center}
+    \includegraphics[width=4.5in,height=2.5in]{pics/lastfm-rslt.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Выводы}
+  \scriptsize{
+  \begin{itemize}
+  \item Проведен анализ коллаборативных момделей в ходе которого выявлены:
+    \begin{itemize}
+    \item Необходимое и достаточные условия эффективности решений основных задач в РС и условия их выполнения.
+    \item Необходимые и достаточные условия применимости существующих оценок эффективности решения задачи $\top$ и условия их выполнения.
+    \end{itemize}
+  \item Разработанная математическая модель РС, в которой:
+        \begin{itemize}
+        \item Формализованы коллаборативные модели, за счет чего повышена их эффективность.
+        \item Введена цценка эффективности во введенной модели, обладающая объективностью результата оценки и коррелирующая с существующими оценками эффективности.
+        \item Релизованы алгоритмы решения задач во введенной модели, обладающие асимптотической сложностью, меньшей на порядок, по сравнению 
+          с существующими решениями и которые теоретически эффективны по введенной оценке эффективности.
+        \end{itemize}
+  \item Разработано ПО для проведения тестирования. В ходе тестирования были получены результаты на реальных данных, подтверждающие теоретические результаты.
+  \item Разработано ПО, реализующее введенную нечеткую модель.
+  \end{itemize}
+}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Опубликованные статьи}
+  \scriptsize{
+Опубликованные:
+\begin{enumerate}
+\item Понизовкин Д. М. Оптимальное распределение проектов при проведении экспертизы / Д. М. Понизовкин, С. А. Амелькин // 
+Электронные библиотеки: Перспективные Методы и Технологии, Электронные коллекции. --- 2010. --- С. 524-525.
+\item Понизовкин Д. М. Построение оптимального графа связей в системах коллаборативной фильтрации / Д. М. Понизовкин, С. А. Амелькин // 
+Программные системы: теория и приложения. 2011.--- Т. 2. --- № 4. С. 107–114
+\item Понизовкин Д. М. Математическая модель коллаборативных процессов принятия решений / Д. М. Понизовкин, С. А. Амелькин // 
+Программные системы: теория и приложения. 2011. --- Т. 2. --- № 4. С 95-99.
+\item Амелькин С. А. Оптимальное проведение экспертизы образовательных процессов / С. А. Амелькин, Д. М. Понизовкин // 
+Труды XVII Всероссийской научно-методической конференции Телематика’2010, Санкт-Петербург: Университетские телекоммуникации. --- 2010. ---
+№ 1, С. 158-159.
+\item Д. М. Понизовкин. Влияние меры сходства на результативность РС // Программные системы: теория и приложения, 2014. --- т. 2. --- N. 5. С 55–65.
+\end{enumerate}
+}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ожидаемые статьи}
+  \scriptsize{
+    \begin{enumerate}
+    \item Понизовкин Д. М. Повышение эффективности решения задачи прогнозирования в эвристических коллаборативных рекомендательных системах / Д. М. Понизовкин // 
+      Искусственный Интеллект и Принятие Решений.
+    \item Понизовкин Д. М. Повышение эффективности решения задачи top-N в эвристических коллаборативных рекомендательных системах / Д. М. Понизовкин // 
+      Информационные технологии
+    \item Понизовкин Д. М. Применение точности как оценки эффективности решения задачи top-N в объектных коллаборативных рекомендательных система / 
+      Д. М. Понизовкин, С. А. Амелькин // Программная инженерия
+    \item Понизовкин Д. М. Модели рекомендательных систем, основанные на теории нечетких множеств / Д. М. Понизовкин // Искусственный Интеллект и Принятие Решений.
+    \end{enumerate}
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{block}{}
+    \begin{center}
+      {\LARGE Спасибо за внимание!}
+      \end{center}
+  \end{block}
+\end{frame}
+
+%%%%%%% END
+\end{document}
