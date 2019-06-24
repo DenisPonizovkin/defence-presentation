@@ -123,7 +123,7 @@
 	\begin{enumerate}
 			% Соответственно в оступлении сказать, что функция рекомендательной системы
 			% формирование рекомендаций, так как я говорю на слайде про функцию.
-		\item функция коллаборативной модели основана на аксиомах,
+		\item коллаборативная модель основана на аксиомах,
 			которые являются эвристическими утверждениями.
 			Выполнение утверждений не анализируется
 			и, в общем случае, не гарантировано;
@@ -140,20 +140,20 @@
 	\frametitle{ЦЕЛЬ И ЗАДАЧИ ИССЛЕДОВАНИЯ}
 	\tiny{
 		\begin{mdframed}{}{}
-			\underline{Цель исследования}: Разработать математическу модель рекомендательной системы,
+			\underline{Цель исследования}: Разработать математическую модель рекомендательной системы,
 			которая аннулирует проблемы коллаборативной модели и является ее эффективным рашсирением.
 		\end{mdframed}
 
 	\begin{mdframed}{}{ }
 		\underline{Задачи:}
 		\begin{enumerate}
-			\item определить условия, при которых результат функции
-				модели является качественным, и способы их удовлетворения;
+			\item определить условия, при которых
+				коллаборативная модель дает качественный результат, и способы их удовлетворения;
 			\item разработать модификацию коллаборативной модели при использовании
-				теории нечетких множеств и определить способы реализации функции
-				модели, позволяющие достигать качественного результата функции
+				теории нечетких множеств и определить способы
+				достижения качественного результата
 				независимо от свойств исходных данных и дополнительных условий
-				и решающие проблему масштабируемости;
+			\item разработать алгоритмы, обладающие меньшей асиптотической сложностью;
 			\item разработать программное обеспечение, с помощью которого
 				получить результаты функции разработанной модификации и
 				коллаборативной модели. Провести сравнительный анализ полученных
@@ -195,7 +195,7 @@
 \item математическая модель РС, являющаяся эффективным расширением коллаборативной модели;
 \item методика формального задания взаимосвязи между информацией
 	о пользователе и объекте,
-	заключающийся в определении отображения пользователя на множество объектов,
+	заключающейся в определении отображения пользователя на множество объектов,
 	за счет которого обеспечивается вычисление прогнозной функции как
 	расстояния между пользователем и объектом;
 \item алгоритмы решения задач, основанные на использовании заданного
@@ -209,10 +209,21 @@
 
 %SLIDE: 1
 \begin{frame}
-	\frametitle{Рекомендательная система}
+	\frametitle{Рекомендательная система (далее РС)}
+	\scriptsize{
+		\begin{mdframed}{}{ }
 		РС --- информационная система, функция которой заключается в генерации
 		рекомендаций объектов некоторой предметной области пользователю по метаданным
-		пользователей или объектов и по известным данным о предпочтениях пользователей.
+		пользователей или объектов и по известным данным о \\предпочтениях пользователей.
+		\end{mdframed}
+\hfill \break
+	Приложения:
+	\begin{enumerate}
+		\item Определение случаев страхового мошенничества (гибридная система при использовании компьютерного зрения);
+		\item Диагностика (прогнозирование) болезни;
+		\item Контекстный перевод текста.
+	\end{enumerate}
+	}
 \end{frame}
 
 \begin{frame}
@@ -272,19 +283,46 @@
 \begin{frame}
 	\frametitle{Задачи РС}
 	\tiny{
-		\begin{mdframed}{Функция модели реализуется через решение одной из
-			следующих задач}{ }
-			Активный пользователь $u_a$ --- тот, для которого производится решение задачи.
+	\begin{mdframed}{}{ }
+		Активный пользователь $u_a$ --- тот, для которого производится решение задачи.\\
+	\end{mdframed}
+
+	\begin{center}
+		\underline{Функция модели реализуется через решение одной из следующих задач:}
+	\end{center}
+
+	\begin{columns}[T]
+		\column{.5\textwidth} % Left column and width
+		\begin{mdframed}{\underline{$\top$}}{ }
+			\\Формирование подмножества \\$I_{\top} = \{$\\
+			\hfill \break
+			$i: (u_a \R i) \wedge (\rho(u_a,i) = \bot)$ \\
+			\hfill \break
+			\} $\wedge$ $|I_{\top}| := N \le n$.
+		\end{mdframed}
+
+		\begin{mdframed}{}{ }
+			Обучающее, тестовое, результирующее множества:
+			\begin{itemize}
+				\item $P_0 \subset P^{\prime}, P^{\prime} \subset P, P^{\prime}
+					:= \{(u, i, \rho(u,
+					i)): u \R i\}$ --- обучающее множество;
+				\item $P_{\bot} := P \setminus P_0$ --- тестовое множество. Объекты тестового множества
+					обозначим $i_{\bot}$;
+				\item $\overline{P}_{\bot} := \{(u_a, \overline{i}_{\bot}, \overline{\rho}(u_a, \overline{i}_{\bot}))\},
+					I_{\top} := \{\overline{i}_{\bot}\}$ --- результирующее множество.
+			\end{itemize}
 		\end{mdframed}
 
 
-	\begin{columns}[T]
 		\column{.5\textwidth} % Left column and width
 		\begin{mdframed}{\underline{Прогнозирование ($pred$)}}{ }
 			Определение неизвестного
 			$\rho(u_a,i_{\bot})$. Спрогнозированное значение обозначим
 			$\overline{\rho}(u_a,i_{\bot})$, где $i_{\bot}$ --- прогнозируемый
 			объект.
+			\hfill \break
+			\hfill \break
 		\end{mdframed}
 
 		\begin{mdframed}{}{ }
@@ -301,27 +339,9 @@
 					результирующее множество.
 
 			\end{itemize}
-		\end{mdframed}
-
-
-		\column{.5\textwidth} % Left column and width
-		\begin{mdframed}{\underline{$\top$}}{ }
-			\\Формирование подмножества \\$I_{\top} = \{$\\
-			$\;\;\;\;\;\;i: (u_a \R i) \wedge (\rho(u_a,i) = \bot)$ \\
-			\} $\wedge |I_{\top}| := N \le n$.
-		\end{mdframed}
-
-		\begin{mdframed}{}{ }
-			Обучающее, тестовое, результирующее множества:
-			\begin{itemize}
-				\item $P_0 \subset P^{\prime}, P^{\prime} \subset P, P^{\prime}
-					:= \{(u, i, \rho(u,
-					i)): u \R i\}$ --- обучающее множество;
-				\item $P_{\bot} := P \setminus P_0$ --- тестовое множество. Объекты тестового множества
-					обозначим $i_{\bot}$;
-				\item $\overline{P}_{\bot} := \{(u_a, \overline{i}_{\bot}, \overline{\rho}(u_a, \overline{i}_{\bot}))\},
-					I_{\top} := \{\overline{i}_{\bot}\}$ --- результирующее множество.
-			\end{itemize}
+			\hfill \break
+			\hfill \break
+			\hfill \break
 		\end{mdframed}
 	\end{columns}
 	}
@@ -365,6 +385,9 @@
 						$I_{\top} = \{\overline{i}_{\bot}\}: \forall i$ $\exists i_0 \text{ } (i \rt i_0)$;
 						%\item Используется компанией Amazon.
 				\end{itemize}
+			\hfill \break
+			\hfill \break
+			\hfill \break
 			\end{mdframed}
 
 			\column{.5\textwidth} % Left column and width
@@ -377,7 +400,7 @@
 						\\$(u_a \ru u) \text{ для } P_0 \Rightarrow (u_a \ru u) \text{ для }
 						P_{\bot}$;
 					\item Правило алгоритмического вычисления СОМ \\
-						$\Pi_{COM}(u_a \R u) \Rightarrow (\rh(u_a, i_{\bot}) := f(\{\rho(u,
+						$\Pi_{C}(u_a \R u) \Rightarrow (\rh(u_a, i_{\bot}) := f(\{\rho(u,
 						i_{\bot})\}))$, где $f$ --- некоторая функция, определяемая
 						разработчиками;
 
@@ -402,14 +425,9 @@
 \end{frame}
 
 
-\begin{frame}
-	\frametitle{ПРИЛОЖЕНИЯ МОДЕЛИ}
-	\begin{enumerate}
-		\item Определение случаев страхового мошенничества (гибридная система при использовании компьютерного зрения);
-		\item Диагностика (прогнозирование) болезни;
-		\item Контекстный перевод текста.
-	\end{enumerate}
-\end{frame}
+%\begin{frame}
+%	\frametitle{ПРИЛОЖЕНИЯ МОДЕЛИ}
+%\end{frame}
 
 
 \begin{frame}
@@ -556,12 +574,11 @@
 	\begin{mdframed}{}{ }
 		\underline{Эффективность коллаборативных моделей по критерию стабильности}\\
 			Если данные {\it не} обладают свойствами динамики и гетерогенности,
-			то аксиомы\\
-			выполняются и реализации функции ООМ и СОМ может
-			гарантировать получение качественного решения. На данных, обладающих
-			свойством динамики или\\
+			то аксиомы выпол\-няются и реализации функции ООМ и СОМ может
+			гарантировать получение качествен\-ного решения. \\
+			На данных, обладающих свойством динамики или
 			гетерогенности реализация ООМ и СОМ не гарантируют
-			получение качественного решения.
+			получение качественного решения. \\
 			Поэтому коллаборативные модели {\it неэффективны по критерию стабильности}.
 	\end{mdframed}
 	}
@@ -684,7 +701,7 @@
 
 
 \begin{frame}
-	\frametitle{Нечеткая модель. Отношение близости $\ru$, $\rt$}
+	\frametitle{Нечеткая модель. Отношение близости, расстояние}
 	\tiny{
 		\begin{mdframed}{}{}
 			\underline{Обобщенное расстояние Хэмминга между пользователями}\\
@@ -720,8 +737,8 @@
 	 \begin{mdframed}{}{}
 		 \underline{Отношение близости объектов}\\
 		 \begin{equation}\label{rt}
-			 i \rt j  \Leftrightarrow \rhi(i, j) = \varepsilon_i,
-			 \varepsilon_i := 0
+			 i \rt j  \Leftrightarrow \rhi(i, j) = \varepsilon_0,
+			 \varepsilon_0 := 0
 		 \end{equation}
 	 \end{mdframed}
  }
@@ -780,6 +797,11 @@
 			\Pi_f = \{ \delta_c, \ref{psi}, \ref{rh-f} \}
 		\end{equation}
 	\end{mdframed}
+
+	\begin{mdframed}{}{ }
+		\underline{Аккуратность задания $\Pi_f$}
+		Правило задано аккуратно, если $|\rho(u, i) - \rh(u, i)| \le \varepsilon_p$
+	\end{mdframed}
 	}
 \end{frame}
 \begin{frame}
@@ -800,7 +822,7 @@
 				\begin{mdframed}{}{ }
 					\underline{Задача $\top$}\\
 					$I_{\top} = \{ \overline{i}_{\bot}: \rh(u_a,
-					\overline{i}_{\bot}) \le \varepsilon_i\}$\\
+					\overline{i}_{\bot}) \le \varepsilon_0\}$\\
 					\underline{Асимптотическая сложность}\\
 					$O(n)$
 				\end{mdframed}
@@ -858,16 +880,14 @@
 	\end{mdframed}
 
 	\begin{mdframed}{}{ }
-		\underline{По критерию стабильности}
-			Качество решения зависит только от
+		\underline{Применение правила $\Pi_f$}
+		\begin{enumerate}
+			\item Качество решения зависит только от
 				разработчиков/исследователей: от способа задания $\delta_c$.
 				Других ограничений и дополнительных условий, влияющих на
 				качество не существует;
-	\end{mdframed}
-
-	\begin{mdframed}{}{ }
-		\underline{По критерию масштабируемости}
-			Асимптотическая сложность алгоритмов решений на порядок меньше.
+			\item Асимптотическая сложность алгоритмов решений на порядок меньше.
+		\end{enumerate}
 	\end{mdframed}
 	}
 \end{frame}
@@ -934,6 +954,10 @@
 					\includegraphics[width=2in,height=1.5in]{pics/transitivity.pdf}
 				\end{center}
 			\end{figure}
+			\begin{center}
+				{\bf ---} $\varepsilon_i = 0,1$\\
+				{\color{red} {\bf ---}} $\varepsilon_i = 0,51$.\\
+			\end{center}
 
 			\column{.5\textwidth} % Left column and width
 			СОМ
@@ -942,12 +966,11 @@
 					\includegraphics[width=2in,height=1.5in]{pics/ub_transitivity.pdf}
 				\end{center}
 			\end{figure}
-
+			\begin{center}
+				{\bf ---} $\varepsilon_p = 0$\\
+				{\color{red} {\bf ---}} $\varepsilon_p = 0,51$\\
+			\end{center}
 		\end{columns}
-	\begin{center}
-		{\bf ---} пороговое значение равно 0,9;\\
-		{\color{red} {\bf ---}} пороговое значение равно 0,49;\\
-	\end{center}
 	}
 \end{frame}
 
@@ -965,6 +988,10 @@
 				\end{center}
 			\end{figure}
 
+			\begin{center}
+				{\bf ---} $(c_X, c_Y, \Pi_{O})$, $c_X, c_Y$ --- вектора, $\rho_i(i, j) = cos(i, j)$\\
+				{\color{red} {\bf ---}} $(c_X, c_Y, \Pi_{O})$, $c_X, c_Y$ --- нечеткие множества, $\rho_i(i, j) = cos{i, j}$
+			\end{center}
 			%\column{.5\textwidth} % Left column and width
 			%\vspace{\baselineskip}
 			%\vspace{\baselineskip}
@@ -1025,6 +1052,10 @@
 			%	\end{center}
 			%\end{table}
 		\end{columns}
+			\begin{center}
+				{\bf ---} $(c_X, c_Y, \Pi_{O})$, $c_X, c_Y$ --- вектора, $\rho_i(i, j) = cos(i, j)$\\
+				{\color{red} {\bf ---}} $(c_X, c_Y, \Pi_{f})$
+			\end{center}
 	}
 \end{frame}
 
@@ -1072,6 +1103,10 @@
 				\end{center}
 			\end{figure}
 
+			\begin{center}
+				{\bf ---} $(c_X, c_Y, \Pi_{C})$, $c_X, c_Y$ --- выборки, $\rho_u(u,v) = r(u, v)$\\
+				{\color{red} {\bf ---}} $(c_X, c_Y, \Pi_{C})$, $c_X, c_Y$ --- нечеткие множества, $\rho_u(u, v) = r(u, v)$
+			\end{center}
 			%\column{.5\textwidth} % Left column and width
 			%\vspace{\baselineskip}
 			%\vspace{\baselineskip}
@@ -1097,42 +1132,6 @@
 	}
 \end{frame}
 
-\begin{frame}
-	\frametitle{Качество решений задачи $\top$ при применении $\Pi_C$
-	в $COM$ и $\Pi_{f}$ в
-	нечеткой модели}
-	\tiny{
-		\begin{columns}[T]
-			\column{.7\textwidth} % Left column and width
-			\begin{figure}[h]
-				\begin{center}
-					\includegraphics[width=3in,height=2in]{pics/oom_vs_fuzz.pdf}
-				\end{center}
-			\end{figure}
-
-			%\column{.5\textwidth} % Left column and width
-			%\vspace{\baselineskip}
-			%\vspace{\baselineskip}
-			%\vspace{\baselineskip}
-			%\vspace{\baselineskip}
-			%\vspace{\baselineskip}
-			%\vspace{\baselineskip}
-			%\vspace{\baselineskip}
-			%\vspace{\baselineskip}
-
-			%\begin{table}[h]
-			%	\begin{center}
-			%		\begin{tabular}{|c|c|}
-			%			\hline
-			%			Модель& Точность \\ \hline
-			%			СОМ&0,495\\ \hline
-			%			Нечеткая&0,334 \\ \hline
-			%		\end{tabular}
-			%	\end{center}
-			%\end{table}
-		\end{columns}
-	}
-\end{frame}
 
 \begin{frame}
 	\frametitle{Качество решений задачи $pred$ при применение $\Pi_C$
@@ -1168,6 +1167,8 @@
 			%	\end{center}
 			%\end{table}
 		\end{columns}
+				{\bf ---} $(c_X, c_Y, \Pi_{C})$, $c_X, c_Y$ --- выборки, $\rho_u(u,v) = r(u, v)$\\
+				{\color{red} {\bf ---}} $(c_X, c_Y, \Pi_{f})$
 	}
 \end{frame}
 
