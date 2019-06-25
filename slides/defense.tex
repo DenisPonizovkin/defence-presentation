@@ -40,6 +40,15 @@
 \newtheorem{assertSRS}{Утверждение СРС}
 \newtheorem{myproof}{Доказательство}[section]
 
+\newenvironment<>{mdfr}[2][\textwidth]{%
+   \setlength{\textwidth}{2cm}
+   \begin{mdframed}#3%
+     \def\insertblocktitle{#2}%
+     \par%
+     \usebeamertemplate{block begin}}
+   {\par%
+     \usebeamertemplate{block end}%
+   \end{mdframed}}
 
 %% \defbeamertemplate*{footline}{shadow theme}
 %% {%
@@ -448,16 +457,24 @@
 			\begin{columns}[T]
 				\column{.5\textwidth} % Left column and width
 				\begin{mdframed}{}{ }
-					Задача решена $\top$ качественно, если
+					Задача решена $\top$ качественно, если\\
+				\hfill \break
 					$\exists \overline{I}_{\top}: \overline{I}_{\top} \subset I_{\top},
 					\overline{I}_{\top} = \{\overline{i}_{\bot}: u_a \R \overline{i}_{\bot}\}$, $|\overline{I}_{\top}| \ge N'$, $N'
-					\le N$, где $N'$ --- устанавливаемый параметр.
+					\le N$,
+				\hfill \break
+					\\где $N'$ --- устанавливаемый параметр.
 				\end{mdframed}
 
 				\column{.4\textwidth} % Left column and width
 				\begin{mdframed}{}{ }
-					Задача решена $pred$ качественно, если
+					Задача решена $pred$ качественно, если\\
+				\hfill \break
 					$|\rho(u_a, i_{\bot}) - \overline{\rho}(u_a,i_{\bot})| \le \varepsilon_p$.
+				\hfill \break
+				\hfill \break
+				\hfill \break
+				\hfill \break
 				\end{mdframed}
 			\end{columns}
 		\end{mdframed}
@@ -488,9 +505,16 @@
 			\begin{mdframed}{}{ }
 				\underline{Достаточное условие\\}\\
 				\underline{эффективности $OOM$}\\
+				\hfill \break
 				Транзитивность отношения близости:\\
 				$\forall$ $\overline{i}_{\bot} \in \overline{I}_{\top}$:
 				$(i_0 \rt \overline{i}_{\bot}) \wedge (i_0 \rt i_{\bot}) \Rightarrow (\overline{i}_{\bot} \rt i_{\bot})$
+				\hfill \break
+				\hfill \break
+				\hfill \break
+				\hfill \break
+				\hfill \break
+				\hfill \break
 			\end{mdframed}
 
 			\column{.5\textwidth} % Left column and width
@@ -508,17 +532,17 @@
 			\end{mdframed}
 		\end{columns}
 
-	\begin{mdframed}{}{ }
-		Выполнение достаточных условий зависит от выбора разработчиками $\rho_i$ и
-		$\varepsilon_i$ или $\rho_u$ и $\varepsilon_u$.
-		\footnote{
-			\tiny{
-				Д. М. Понизовкин. Влияние меры сходства на результативность РС //
-		Программные системы: теория и приложения, 2014. --- т. 2. --- N. 5. С
-		55–65.
-		}
+	\begin{mdfr}[9cm]{}{}
+		Выполнение достаточных условий зависит от выбора разработчиками\\
+		$\rho_i$ и $\varepsilon_i$ или $\rho_u$ и $\varepsilon_u$.
+			\footnote{
+				\tiny{
+					Д. М. Понизовкин. Влияние меры сходства на результативность РС\\ //
+			Программные системы: теория и приложения, 2014. --- т. 2. --- N. 5. С
+			55–65.
+			}
 		}.
-	\end{mdframed}
+	\end{mdfr}
 
 	\begin{mdframed}{}{ }
 		В общем случае выполнение достаточных условий не гарантировано,
@@ -860,6 +884,7 @@
 				эффективностью, так как выполняется достаточное
 				условие эффективности решения за счет метрических свойств
 				расстояния.
+				\hfill \break
 			\end{mdframed}
 
 			\column{.4\textwidth} % Left column and width
