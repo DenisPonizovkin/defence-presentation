@@ -737,8 +737,8 @@
 	 \begin{mdframed}{}{}
 		 \underline{Отношение близости объектов}\\
 		 \begin{equation}\label{rt}
-			 i \rt j  \Leftrightarrow \rhi(i, j) = \varepsilon_0,
-			 \varepsilon_0 := 0
+			 i \rt j  \Leftrightarrow \rhi(i, j) \le \varepsilon_i,
+			 \varepsilon_i := 0
 		 \end{equation}
 	 \end{mdframed}
  }
@@ -746,7 +746,7 @@
 
 
 \begin{frame}
-	\frametitle{Нечеткая модель. Отношение близости пользователя и объекта}
+	\frametitle{Нечеткая модель. Отображение метаданных пользователя на множество метаданных обектов}
 	\tiny{
 		\begin{mdframed}{}{ }
 			\underline{Алгоритм задания нечеткого правила $\Pi_f$}\\
@@ -880,14 +880,15 @@
 	\end{mdframed}
 
 	\begin{mdframed}{}{ }
-		\underline{Применение правила $\Pi_f$}
-		\begin{enumerate}
-			\item Качество решения зависит только от
-				разработчиков/исследователей: от способа задания $\delta_c$.
-				Других ограничений и дополнительных условий, влияющих на
-				качество не существует;
-			\item Асимптотическая сложность алгоритмов решений на порядок меньше.
-		\end{enumerate}
+		\underline{Стабильность}
+		Качество решения зависит только от
+		разработчиков/исследователей: от способа задания $\delta_c$.
+		Других ограничений и дополнительных условий, влияющих на
+		качество не существует;
+	\end{mdframed}
+
+	\begin{mdframed}{}{ }
+			Асимптотическая сложность алгоритмов решений на порядок меньше.
 	\end{mdframed}
 	}
 \end{frame}
@@ -955,7 +956,7 @@
 				\end{center}
 			\end{figure}
 			\begin{center}
-				{\bf ---} $\varepsilon_i = 0,1$\\
+				{\bf ---} $\varepsilon_i = 0$\\
 				{\color{red} {\bf ---}} $\varepsilon_i = 0,51$.\\
 			\end{center}
 
@@ -990,7 +991,7 @@
 
 			\begin{center}
 				{\bf ---} $(c_X, c_Y, \Pi_{O})$, $c_X, c_Y$ --- вектора, $\rho_i(i, j) = cos(i, j)$\\
-				{\color{red} {\bf ---}} $(c_X, c_Y, \Pi_{O})$, $c_X, c_Y$ --- нечеткие множества, $\rho_i(i, j) = cos{i, j}$
+				{\color{red} {\bf ---}} $(c_X, c_Y, \Pi_{O})$, $c_X, c_Y$ --- нечеткие множества, $\rho_i(i, j) = cos(i, j)$
 			\end{center}
 			%\column{.5\textwidth} % Left column and width
 			%\vspace{\baselineskip}
